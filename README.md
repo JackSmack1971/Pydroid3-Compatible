@@ -10,6 +10,8 @@ LSI Scraper is a Python tool designed to fetch and analyze web page content to i
 - Identifies entities using TextBlob.
 - Extracts LSI keywords using Gensim's LSI model.
 - Outputs the results to an Excel file.
+- Enhanced error handling for more robust web scraping.
+- Optimized text processing for improved efficiency.
 
 ## Installation
 Ensure you have Python 3.6+ installed. Then, install the required packages:
