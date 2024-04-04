@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file. The format 
 
 - Your notes for upcoming changes...
 
+## [1.4.0] - 2024-04-12
+
+### Improved
+- Implemented dynamic topic number calculation in `build_lsi_model` based on the content's diversity for more relevant keyword extraction.
+- Enhanced `preprocess_text` with lemmatization to consolidate various forms of a word into its base or root form, making analysis more efficient.
+- Streamlined NLTK data checks in `ensure_nltk_data` to implement caching, avoiding redundant data downloads within the same execution.
+- Introduced error logging with Python's `logging` module for more flexible error handling and record-keeping in `fetch_page_content`.
+- Added content length check in `extract_text` to handle empty or whitespace-only content more gracefully.
+- Ensured the uniqueness of LSI keywords by deduplicating them before DataFrame creation, leading to cleaner results.
+- Made headers in `fetch_page_content` configurable, allowing adjustments without source code modifications for better scraping performance.
+
 ## [1.3.0] - 2024-04-11
 
 ### Improved
