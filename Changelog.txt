@@ -1,3 +1,4 @@
+
 # Changelog
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -5,6 +6,19 @@ All notable changes to this project will be documented in this file. The format 
 ## [Unreleased]
 
 - Your notes for upcoming changes...
+
+## [1.2.0] - 2024-04-10
+
+### Improved
+- Optimized `ensure_nltk_data()` to check the presence of necessary NLTK data before downloading.
+- Enhanced error handling in `fetch_page_content` with more specific exceptions for different types of HTTP errors.
+- Refined text preprocessing for efficiency using list comprehensions and NLTK's built-in functions for stopwords filtering.
+- Improved LSI model creation and topic extraction process by dynamically selecting the number of topics based on content size and optimizing methods for topic extraction.
+- Refined the logic for ensuring lists (entities and LSI keywords) have the same length before DataFrame creation, resulting in more efficient and reliable DataFrame instantiation.
+- General improvements in code structure and readability, ensuring better adherence to PEP 8 guidelines and organizing the code into more reusable functions.
+
+### Documentation
+- Updated README.md and inline comments to reflect code changes and optimizations.
 
 ## [1.1.0] - 2024-04-04
 
@@ -28,4 +42,3 @@ All notable changes to this project will be documented in this file. The format 
 ## [1.0.0] - 2024-03-01
 
 - Initial release.
-
