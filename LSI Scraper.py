@@ -3,71 +3,64 @@ from bs4 import BeautifulSoup
 import nltk
 from textblob import TextBlob
 from gensim import corpora, models
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 import pandas as pd
 import os
 
+# Check and download necessary NLTK data
 def ensure_nltk_data():
-    print("Checking and downloading necessary NLTK data...")
     necessary_data = ['punkt', 'stopwords', 'brown']
     for dataset in necessary_data:
-        nltk.download(dataset, quiet=True)
-    print("NLTK data is ready.")
+        if not nltk.data.find(f'tokenizers/{dataset}'):
+            print(f"Downloading NLTK data: {dataset}...")
+            nltk.download(dataset, quiet=True)
 
+# Fetch page content with refined error handling
 def fetch_page_content(url):
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        print(f"Fetching content from {url}...")
-        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
-        print("Content fetched successfully.")
         return response.text
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching the webpage content: {e}")
-        return None
+    except requests.HTTPError as e:
+        print(f"HTTP Error: {e}")
+    except requests.RequestException as e:
+        print(f"Request Error: {e}")
+    return None
 
+# Extract text from HTML
 def extract_text(html_content):
-    if html_content:
-        print("Extracting text from HTML...")
-        soup = BeautifulSoup(html_content, 'html.parser')
-        text = soup.get_text()
-        print("Text extraction complete.")
-        return text
-    return ""
+    soup = BeautifulSoup(html_content, 'html.parser')
+    return soup.get_text()
 
+# Preprocess text by filtering stopwords efficiently
 def preprocess_text(text):
-    print("Preprocessing text...")
-    stop_words = set(word.lower() for word in stopwords.words('english'))
-    words = word_tokenize(text.lower())
-    filtered_words = [word for word in words if word.isalpha() and word not in stop_words]
-    print("Text preprocessing complete.")
-    return filtered_words
+    stop_words = set(stopwords.words('english'))
+    words = nltk.word_tokenize(text.lower())
+    return [word for word in words if word.isalpha() and word not in stop_words]
 
+# Extract entities using TextBlob
 def extract_entities(text):
-    print("Extracting noun phrases (entities)...")
     blob = TextBlob(text)
-    entities = blob.noun_phrases
-    print("Entity extraction complete.")
-    return entities
+    return blob.noun_phrases
 
+# Build LSI model and dictionary
 def build_lsi_model(texts):
-    print("Building LSI model...")
     dictionary = corpora.Dictionary(texts)
     corpus = [dictionary.doc2bow(text) for text in texts]
-    lsi_model = models.LsiModel(corpus, id2word=dictionary, num_topics=10)
-    print("LSI model built successfully.")
+    lsi_model = models.LsiModel(corpus, id2word=dictionary, num_topics=5)  # Optimize number of topics
     return lsi_model, dictionary
 
-def create_data_frame(entities, lsi_topics):
-    print("Creating DataFrame...")
-    data = {"Entities": entities, "LSI Keywords": lsi_topics}
-    df = pd.DataFrame(data)
-    print("DataFrame created successfully.")
-    return df
+# Create DataFrame with improved logic for equal length lists
+def create_data_frame(entities, lsi_keywords):
+    max_len = max(len(entities), len(lsi_keywords))
+    data = {
+        "Entities": entities + [""] * (max_len - len(entities)),
+        "LSI Keywords": lsi_keywords + [""] * (max_len - len(lsi_keywords))
+    }
+    return pd.DataFrame(data)
 
 def main(url):
     ensure_nltk_data()
-    print("Current Working Directory:", os.getcwd())
 
     html_content = fetch_page_content(url)
     if html_content:
@@ -77,22 +70,15 @@ def main(url):
         
         lsi_model, _ = build_lsi_model([preprocessed_text])
         
-        # Extract keywords from LSI topics
-        topics = lsi_model.show_topics(num_topics=10, formatted=False)
+        topics = lsi_model.show_topics(num_topics=5, formatted=False)
         lsi_keywords = [word for topic in topics for word, _ in topic[1]]
         
-        # Ensure both lists have the same length
-        max_len = max(len(entities), len(lsi_keywords))
-        entities.extend([""] * (max_len - len(entities)))
-        lsi_keywords.extend([""] * (max_len - len(lsi_keywords)))
-        
-        # Create DataFrame
-        df = create_data_frame(entities, lsi_keywords)
+        df = create_data_frame(list(entities), lsi_keywords)
         df.to_excel("lsi_keywords_and_entities.xlsx", index=False)
         print("Analysis complete. Results saved to 'lsi_keywords_and_entities.xlsx'.")
     else:
         print("Failed to fetch content. Exiting...")
 
 if __name__ == "__main__":
-    url = "https://example.com"  # Placeholder URL
+    url = "https://example.com"
     main(url)
