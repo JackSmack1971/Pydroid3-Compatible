@@ -1,0 +1,31 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+- Your notes for upcoming changes...
+
+## [1.1.0] - 2024-04-04
+
+### Added
+- Progress Reporting to inform users about the current operation, enhancing user experience.
+- `ensure_nltk_data()` function for checking and downloading necessary NLTK datasets (`punkt`, `stopwords`, `brown`) if not present.
+- User-Agent in HTTP requests for improved compatibility with web servers.
+
+### Improved
+- Error handling with try-except blocks around network requests and major operations.
+- Code refactoring for better readability, maintainability, and efficiency.
+- Text preprocessing to include case-insensitive stopword removal.
+- DataFrame creation process in `create_data_frame` function, ensuring lists for entities and LSI keywords have equal lengths before DataFrame instantiation.
+
+### Fixed
+- An issue where DataFrame creation could fail due to mismatched lengths of entities and LSI keywords lists.
+
+### Security
+- Added headers to HTTP requests to mimic real browser requests, enhancing security and reliability.
+
+## [1.0.0] - 2024-03-01
+
+- Initial release.
+
